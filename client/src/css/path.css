@@ -1,0 +1,53 @@
+:root {
+    --distance: 40%;
+    --path-size: 300px;
+
+    /*--path-curve-size: 8.302542686462402;*/
+}
+
+body {
+    background-color: #f7f7f7ff;
+}
+
+.path {
+    width: 100%;
+    height: var(--path-size);
+}
+
+.circle {
+    transform: translate(-0.1px, -0.4px);
+    offset-path: path("m0.79375 4.4979s1.0583-1.8521 1.5875-1.8521c0.52917 0 1.0583 0.79378 1.5875 0.79375 0.52917-3.35e-5 1.5875-1.8521 1.5875-1.8521");
+    /*animation: displace-circle 0.6s ease-out forwards;*/
+
+    offset-distance: 0;
+}
+
+.path-indc {
+    fill: none;
+    stroke-width: 0.3px;
+
+    /*stroke-dasharray: var(--path-curve-size);*/
+    /*stroke-dashoffset: var(--path-curve-size);*/
+    /*animation: draw 0.6s ease-out forwards;*/
+}
+
+.path-main {
+    stroke-width: 0.2px;
+}
+
+/*
+        @keyframes displace-circle {
+            0% {
+                offset-distance: 0%;
+            }
+
+            100% {
+                offset-distance: var(--distance);
+            }
+        }
+
+        @keyframes draw {
+            100% {
+                stroke-dashoffset: 4.981525612;
+            }
+        }*/
