@@ -36,7 +36,7 @@ ollama = Ollama(
     base_url=os.getenv("OLLAMA_BASE_URL")
 )
 
-
+# Create
 @app.post("/user")
 def create_user():
     data = request.get_json()
@@ -69,8 +69,100 @@ def create_user():
             "error": str(e)
         }), 500
 
+# Retrieve
+@app.get("/user/<email>")
+def get_user(email):
+    try:
+        user = user_model.get(email)
 
-@app.post("/analyze_claim")
+        if not user:
+            return jsonify({
+                "error": "User not found"
+            }), 404
+
+        return jsonify({
+            "email": user[1],
+            "password": user[2],
+            "username": user[3]
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            "error": str(e)
+        }), 500
+
+# Update
+@app.put("/user/<email>")
+def update_user(email):
+    data = request.get_json()
+
+    if not data:
+        return jsonify({
+            "error": "Request body is required"
+        }), 400
+
+    allowed_fields = {
+        "email",
+        "password",
+        "username"
+    }
+
+    update_params = {
+        key: value
+        for key, value in data.items()
+        if key in allowed_fields
+    }
+
+    if not update_params:
+        return jsonify({
+            "error": "No valid fields provided"
+        }), 400
+
+    try:
+        user = user_model.get(email)
+
+        if not user:
+            return jsonify({
+                "error": "User not found"
+            }), 404
+
+        user_model.update(
+            email=email,
+            params=update_params
+        )
+
+        return jsonify({
+            "message": "User updated successfully"
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            "error": str(e)
+        }), 500
+
+# Delete
+@app.delete("/user/<email>")
+def delete_user(email):
+    try:
+        user = user_model.get(email)
+
+        if not user:
+            return jsonify({
+                "error": "User not found"
+            }), 404
+
+        user_model.delete(email)
+
+        return jsonify({
+            "message": "User deleted successfully"
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            "error": str(e)
+        }), 500
+
+@app.post("/report")
 def analyze_claim():
     data = request.get_json()
 
@@ -78,14 +170,14 @@ def analyze_claim():
         return jsonify({"error": "Request body is required"}), 400
 
     claim = data.get("claim")
-    user_id = int(data.get("user_id"))
+    user_email = data.get("email")
 
     if not claim:
         return jsonify({
             "error": "claim is required"
         }), 400
 
-    if not user_id:
+    if not user_email:
         return jsonify({
             "error": "user_id is required"
         }), 400
@@ -133,7 +225,7 @@ def analyze_claim():
             score=score,
             reason=reason,
             confidence=confidence,
-            user_id=user_id
+            user_email=user_email
         )
 
         return jsonify({

@@ -9,9 +9,10 @@ class User:
         )
 
     def get(self, email):
-        self.database.execute_query(
+        return self.database.execute_query(
             "SELECT * FROM users WHERE email = ?",
-            (email,)
+            (email,),
+            "one"
         )
 
     def update(self, email, params):
@@ -35,6 +36,19 @@ class User:
         )
 
     def delete(self, email):
+        user_id = self.database.execute_query(
+            "SELECT * FROM users WHERE email = ?",
+            (email,),
+            "one"
+        )[0]
+
+        print(user_id)
+
+        self.database.execute_query(
+            "DELETE FROM users WHERE email = ?",
+            (user_id,)
+        )
+
         self.database.execute_query(
             "DELETE FROM users WHERE email = ?",
             (email,)
